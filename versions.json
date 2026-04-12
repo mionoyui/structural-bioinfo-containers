@@ -1,0 +1,17 @@
+{
+  "boltz": {
+    "version": "2.2.1",
+    "cuda": "13",
+    "image": "ghcr.io/mionoyui/boltz"
+  },
+  "colabfold": {
+    "version": "1.5.5",
+    "cuda": "12",
+    "image": "ghcr.io/mionoyui/colabfold"
+  },
+  "proteinmpnn": {
+    "version": "1.0.1",
+    "cuda": "12",
+    "image": "ghcr.io/mionoyui/proteinmpnn"
+  }
+}
