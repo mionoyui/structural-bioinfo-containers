@@ -24,9 +24,9 @@ cd structural-bioinfo-containers
 docker run --rm --gpus all \
   --shm-size=8g \
   -v ~/.boltz:/root/.boltz \
-  -v $(pwd)/example:/work \
+  -v $(pwd)/example/boltz:/work \
   ghcr.io/mionoyui/boltz:2.2.1 \
-  boltz predict /work/input/input.fasta --out_dir /work/results  --use_msa_server
+  boltz predict /work/input/input.fasta --out_dir /work/results --use_msa_server
 ```
 
 ## ローカルビルド

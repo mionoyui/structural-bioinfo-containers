@@ -10,7 +10,7 @@ __pycache__/
 *.egg-info/
 
 # Example outputs
-example/results/
+example/*/results/
 
 # OS
 .DS_Store
