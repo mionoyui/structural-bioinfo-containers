@@ -14,19 +14,26 @@
 ## 使い方
 
 ```bash
-# ~/.boltz がなければ先に作成（初回のみ）
-mkdir -p ~/.boltz
-git clone structural-bioinfo-containers
-cd structural-bioinfo-containers
 # リポジトリルートから実行
-# 構造予測（GPU）
-# ~/.boltz にすでにモデルがあればダウンロードをスキップ
+mkdir -p ~/.boltz ~/.cache/triton example/boltz/results
+
 docker run --rm --gpus all \
   --shm-size=8g \
-  -v ~/.boltz:/root/.boltz \
-  -v $(pwd)/example/boltz:/work \
+  --user $(id -u):$(id -g) \
+  -v /etc/passwd:/etc/passwd:ro \
+  -e NUMBA_CACHE_DIR=/tmp \
+  -e TRITON_CACHE_DIR=/models/triton \
+  -e TORCHINDUCTOR_CACHE_DIR=/tmp \
+  -e XDG_CACHE_HOME=/tmp \
+  -v ~/.boltz:/models/boltz \
+  -v ~/.cache/triton:/models/triton \
+  -v $(pwd)/example/boltz/input:/input:ro \
+  -v $(pwd)/example/boltz/results:/output \
   ghcr.io/mionoyui/boltz:2.2.1 \
-  boltz predict /work/input/input.fasta --out_dir /work/results --use_msa_server
+  boltz predict /input/input.fasta \
+    --out_dir /output \
+    --cache /models/boltz \
+    --use_msa_server
 ```
 
 ## ローカルビルド
@@ -49,4 +56,4 @@ FASTAまたはYAML形式。詳細は [Boltz-2ドキュメント](https://github.
 
 ## Boltzのモデル重みについて
 
-初回実行時に `~/.boltz`（コンテナ内 `/root/.boltz`）へ自動ダウンロードされます。
+初回実行時に `~/.boltz`（コンテナ内 `/models/boltz`）へ自動ダウンロードされます。

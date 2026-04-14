@@ -16,12 +16,17 @@
 ```bash
 # リポジトリルートから実行
 # example/proteinmpnn/input/6MRR.pdb を入力として配列設計
+mkdir -p example/proteinmpnn/results
+
 docker run --rm --gpus all \
-  -v $(pwd)/example/proteinmpnn:/work \
+  --user $(id -u):$(id -g) \
+  -v /etc/passwd:/etc/passwd:ro \
+  -v $(pwd)/example/proteinmpnn/input:/input:ro \
+  -v $(pwd)/example/proteinmpnn/results:/output \
   ghcr.io/mionoyui/proteinmpnn:1.0.1 \
   python /app/ProteinMPNN/protein_mpnn_run.py \
-    --pdb_path /work/input/6MRR.pdb \
-    --out_folder /work/results \
+    --pdb_path /input/6MRR.pdb \
+    --out_folder /output \
     --num_seq_per_target 2 \
     --sampling_temp "0.1" \
     --seed 37 \

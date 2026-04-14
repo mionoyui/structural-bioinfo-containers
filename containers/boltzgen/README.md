@@ -16,13 +16,22 @@
 
 ```bash
 # リポジトリルートから実行
-mkdir -p ~/.cache/huggingface
+mkdir -p ~/.cache/huggingface ~/.cache/triton example/boltzgen/results
 
 # 環状ペプチドバインダー設計（GPU）
 docker run --rm --gpus all \
   --shm-size=8g \
-  -v ~/.cache/huggingface:/root/.cache/huggingface \
-  -v $(pwd)/example/boltzgen:/work \
+  --user $(id -u):$(id -g) \
+  -v /etc/passwd:/etc/passwd:ro \
+  -e NUMBA_CACHE_DIR=/tmp \
+  -e TRITON_CACHE_DIR=/models/triton \
+  -e TORCHINDUCTOR_CACHE_DIR=/tmp \
+  -e XDG_CACHE_HOME=/tmp \
+  -e HF_HOME=/models/huggingface \
+  -v ~/.cache/huggingface:/models/huggingface \
+  -v ~/.cache/triton:/models/triton \
+  -v $(pwd)/example/boltzgen/input:/work/input:ro \
+  -v $(pwd)/example/boltzgen/results:/work/results \
   ghcr.io/mionoyui/boltzgen:0.3.1 \
   boltzgen run /work/input/cyclicdesign.yaml \
     --output /work/results \
@@ -84,4 +93,4 @@ entities:
 ## モデル重みについて
 
 初回実行時に HuggingFace (`boltzgen/boltzgen-1`) から自動ダウンロードされる。
-キャッシュは `~/.cache/huggingface`（コンテナ内 `/root/.cache/huggingface`）に保存される。
+キャッシュは `~/.cache/huggingface`（コンテナ内 `/models/huggingface`）に保存される。
