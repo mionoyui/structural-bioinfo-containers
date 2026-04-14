@@ -6,12 +6,12 @@
 
 ## 収録ツール
 
-| ツール | カテゴリ | ライセンス | イメージ |
-|--------|---------|-----------|--------|
-| [Boltz-2](https://github.com/jwohlwend/boltz) | 配列 -> 構造 | MIT | `ghcr.io/mionoyui/boltz` |
-| [ColabFold](https://github.com/sokrypton/ColabFold) | 配列 -> 構造 | MIT | `ghcr.io/mionoyui/colabfold` |
-| [ProteinMPNN](https://github.com/dauparas/ProteinMPNN) | 構造 -> 配列 | MIT | `ghcr.io/mionoyui/proteinmpnn` |
-| [BoltzGen](https://github.com/HannesStark/boltzgen) | バインダー設計 | MIT | `ghcr.io/mionoyui/boltzgen` |
+| ツール | カテゴリ | NVIDIAドライバー | ライセンス | イメージ | 詳細 |
+|--------|---------|-------------|-----------|--------|------|
+| [Boltz-2](https://github.com/jwohlwend/boltz) | 配列 -> 構造 | >= 575 (CUDA 13) | MIT | `ghcr.io/mionoyui/boltz` | [README](containers/boltz/README.md) |
+| [ColabFold](https://github.com/sokrypton/ColabFold) | 配列 -> 構造 | >= 525 (CUDA 12) | MIT | `ghcr.io/mionoyui/colabfold` | [README](containers/colabfold/README.md) |
+| [ProteinMPNN](https://github.com/dauparas/ProteinMPNN) | 構造 -> 配列 | >= 525 (CUDA 12) | MIT | `ghcr.io/mionoyui/proteinmpnn` | [README](containers/proteinmpnn/README.md) |
+| [BoltzGen](https://github.com/HannesStark/boltzgen) | バインダー設計 | >= 575 (CUDA 13) | MIT | `ghcr.io/mionoyui/boltzgen` | [README](containers/boltzgen/README.md) |
 
 
 ## 前提条件
@@ -19,53 +19,6 @@
 - Docker または Apptainer/Singularity
 - GPU使用時: [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) インストール済み
 - 各コンテナのビルド: [Pixi](https://pixi.sh) (`curl -fsSL https://pixi.sh/install.sh | bash`)
-
-## クイックスタート
-
-### Boltz-2 で構造予測
-
-```bash
-# モデル重みのキャッシュ用ディレクトリを用意
-mkdir -p ~/.boltz
-
-# 構造予測（初回実行時に重みを自動ダウンロード）
-docker run --rm --gpus all \
-  --shm-size=8g \
-  -v ~/.boltz:/root/.boltz \
-  -v $(pwd)/example/boltz:/work \
-  ghcr.io/mionoyui/boltz:2.2.1 \
-  boltz predict /work/input/input.fasta --out_dir /work/results --accelerator gpu --use_msa_server
-```
-
-### ProteinMPNN で配列設計
-
-```bash
-docker run --rm --gpus all \
-  -v $(pwd)/example/proteinmpnn:/work \
-  ghcr.io/mionoyui/proteinmpnn:1.0.1 \
-  python /app/ProteinMPNN/protein_mpnn_run.py \
-    --pdb_path /work/input/6MRR.pdb \
-    --out_folder /work/results \
-    --num_seq_per_target 2 \
-    --sampling_temp "0.1" \
-    --seed 37 \
-    --batch_size 1
-```
-
-### BoltzGen で環状ペプチドバインダー設計
-
-```bash
-mkdir -p ~/.cache/huggingface
-
-docker run --rm --gpus all \
-  --shm-size=8g \
-  -v ~/.cache/huggingface:/root/.cache/huggingface \
-  -v $(pwd)/example/boltzgen:/work \
-  ghcr.io/mionoyui/boltzgen:0.3.1 \
-  boltzgen run /work/input/cyclicdesign.yaml \
-    --output /work/results \
-    --num_designs 3
-```
 
 ## ディレクトリ構成
 
@@ -101,4 +54,3 @@ docker run --rm boltz-local boltz --help
 ## ライセンス
 
 このリポジトリのDockerfile・設定コード: MIT License
-各ツールのライセンスは [docs/license_notes.md](docs/license_notes.md) を参照。
